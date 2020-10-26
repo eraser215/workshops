@@ -45,33 +45,6 @@ node3 ansible_host=<Z.Z.Z.Z>
 ansible ansible_host=44.55.66.77
 ```
 
-Ansible is already configured to use the inventory specific to your environment. We will show you in the next step how that is done. For now, we will execute some simple commands to work with the inventory.
-
-To reference inventory hosts, you supply a host pattern to the ansible command. Ansible has a `--list-hosts` option which can be useful for clarifying which managed hosts are referenced by the host pattern in an ansible command.
-
-The most basic host pattern is the name for a single managed host listed in the inventory file. This specifies that the host will be the only one in the inventory file that will be acted upon by the ansible command. Run:
-
-```bash
-[student<X@>ansible ~]$ ansible node1 --list-hosts
-  hosts (1):
-    node1
-```
-
-An inventory file can contain a lot more information, it can organize your hosts in groups or define variables. In our example, the current inventory has the groups `web` and `control`. Run Ansible with these host patterns and observe the output:
-
-```bash
-[student<X@>ansible ~]$ ansible web  --list-hosts
-[student<X@>ansible ~]$ ansible web,ansible --list-hosts
-[student<X@>ansible ~]$ ansible 'node*' --list-hosts
-[student<X@>ansible ~]$ ansible all --list-hosts
-```
-
-As you see it is OK to put systems in more than one group. For instance, a server could be both a web server and a database server. Note that in Ansible the groups are not necessarily hierarchical.
-
-> **Tip**
->
-> The inventory can contain more data. E.g. if you have hosts that run on non-standard SSH ports you can put the port number after the hostname with a colon. Or you could define names specific to Ansible and have them point to the "real" IP or hostname.
-
 ## Step 2 - The Ansible Configuration Files
 
 The behavior of Ansible can be customized by modifying settings in Ansible’s ini-style configuration file. Ansible will select its configuration file from one of several possible locations on the control node, please refer to the [documentation](https://docs.ansible.com/ansible/latest/reference_appendices/config.html).
@@ -153,34 +126,6 @@ node2 | SUCCESS => {
 
 As you see each node reports the successful execution and the actual result - here "pong".
 
-## Step 4 - Listing Modules and Getting Help
-
-Ansible comes with a lot of modules by default. To list all modules run:
-
-```bash
-[student<X>@ansible ~]$ ansible-doc -l
-```
-
-> **Tip**
->
-> In `ansible-doc` leave by pressing the button `q`. Use the `up`/`down` arrows to scroll through the content.
-
-To find a module try e.g.:
-
-```bash
-[student<X>@ansible ~]$ ansible-doc -l | grep -i user
-```
-
-Get help for a specific module including usage examples:
-
-```bash
-[student<X>@ansible ~]$ ansible-doc user
-```
-
-> **Tip**
->
-> Mandatory options are marked by a "=" in `ansible-doc`.
-
 ## Step 5 - Use the command module:
 
 Now let's see how we can run a good ol' fashioned Linux command and format the output using the `command` module. It simply executes the specified command on a managed host:
@@ -197,18 +142,6 @@ Another example: Have a quick look at the kernel versions your hosts are running
 ```bash
 [student<X>@ansible ~]$ ansible all -m command -a 'uname -r'
 ```
-
-Sometimes it’s desirable to have the output for a host on one line:
-
-```bash
-[student<X>@ansible ~]$ ansible all -m command -a 'uname -r' -o
-```
-
-> **Tip**
->
-> Like many Linux commands, `ansible` allows for long-form options as well as short-form.  For example `ansible web --module-name ping` is the same as running `ansible web -m ping`.  We are going to be using the short-form options throughout this workshop.
-
-## Step 6 - The copy module and permissions
 
 Using the `copy` module, execute an ad hoc command on `node1` to change the contents of the `/etc/motd` file. **The content is handed to the module through an option in this case**.
 
@@ -280,29 +213,6 @@ Run the `ansible node1 -m copy …​` command from above again. Note:
 >
 > This makes it a lot easier to spot changes and what Ansible actually did.
 
-## Challenge Lab: Modules
-
-  - Using `ansible-doc`
-
-      - Find a module that uses Yum to manage software packages.
-
-      - Look up the help examples for the module to learn how to install a package in the latest version.
-
-  - Run an Ansible ad hoc command to install the package "squid" in the latest version on `node1`.
-
-> **Tip**
->
-> Use the copy ad hoc command from above as a template and change the module and options.
-
-> **Warning**
->
-> **Solution below\!**
-
-```
-[student<X>@ansible ~]$ ansible-doc -l | grep -i yum
-[student<X>@ansible ~]$ ansible-doc yum
-[student<X>@ansible ~]$ ansible node1 -m yum -a 'name=squid state=latest' -b
-```
 
 ----
 **Navigation**
